@@ -19,13 +19,13 @@ public class FindCountryNameByItsCode {
         countryMap.put("NZ", "New Zealand");
 
         Scanner scanner = new Scanner(System.in);
-        System.out.println("Enter the country code: ");
+        System.out.println("Enter the country code:- ");
         String countryCodeInput = scanner.nextLine().toUpperCase();
 
         String countryName = countryMap.get(countryCodeInput);
 
         if (countryName != null) {
-            System.out.println("Country name is: " + countryName);
+            System.out.println("Country name is:- " + countryName);
         } else {
             System.out.println("Country code is incorrect");
         }
