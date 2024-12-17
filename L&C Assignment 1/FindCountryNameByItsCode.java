@@ -25,9 +25,9 @@ public class FindCountryNameByItsCode {
         String countryName = countryMap.get(countryCodeInput);
 
         if (countryName != null) {
-            System.out.println("Country name: " + countryName);
+            System.out.println("Country name is: " + countryName);
         } else {
-            System.out.println("Country code not foundiing");
+            System.out.println("Country code is incorrect");
         }
     }
 }

@@ -1,0 +1,14 @@
+*.xml
+.idea/**
+ITSM-UI-TestCases-testReport.html
+itsm-webapp.iml
+target/
+Screenshots/
+ src/test/resources/TestData/Standard Asset Import Template_v26.xlsx
+ src/test/resources/TestData/Standard Asset Import Template_v24.xlsx
+src/test/resources/TestData/~$Asset Reconciliation Template-V0.1.xlsx
+src/test/resources/TestData/Asset Account Change Import.xlsx
+src/test/resources/TestData/~$Cost Center Import Template.xlsx
+src/test/resources/TestData/BDE6AC50
+
+
