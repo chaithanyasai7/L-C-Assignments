@@ -1,4 +1,4 @@
-package src.test.java.model;
+package model;
 
 public enum ServerStatus {
     ACTIVE,

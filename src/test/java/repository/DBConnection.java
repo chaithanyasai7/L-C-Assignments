@@ -1,4 +1,4 @@
-package src.test.java.repository;
+package repository;
 
 import java.sql.Connection;
 import java.sql.DriverManager;

@@ -1,4 +1,4 @@
-package src.test.java.util;
+package util;
 
 import java.io.IOException;
 import java.util.Objects;

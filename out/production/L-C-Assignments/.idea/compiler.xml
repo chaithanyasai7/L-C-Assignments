@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <annotationProcessing>
+      <profile name="Maven default annotation processors profile" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <module name="Formatting_week2" />
+        <module name="ATM" />
+        <module name="Formatting_week1" />
+      </profile>
+    </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="ATM" target="20" />
+      <module name="Formatting_week1" target="20" />
+      <module name="Formatting_week2" target="20" />
+      <module name="Objects_DS" target="20" />
+    </bytecodeTargetLevel>
+  </component>
+</project>
