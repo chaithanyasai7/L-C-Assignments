@@ -249,8 +249,6 @@ public class NewsAggregationApplication {
         return null;
     }
 
-
-
     public static int getIntInput(String prompt) {
         while (true) {
             System.out.print(prompt);

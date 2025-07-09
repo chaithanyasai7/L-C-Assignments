@@ -15,7 +15,6 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static newsAggregationApplication.NewsAggregationApplication.articleService;
-import static service.ArticleService.normalizeAndFixArticle;
 
 public class HeadlinesMenu {
 
@@ -30,9 +29,11 @@ public class HeadlinesMenu {
 
             String input = scanner.nextLine().trim();
             switch (input) {
-                case "1" -> showTodayMenu(user, articleService, database, scanner);
+                case "1" -> showTodayMenu(articleService, scanner);
                 case "2" -> showDateRangeMenu(user, articleService, database, scanner);
-                case "3" -> { return; }
+                case "3" -> {
+                    return;
+                }
                 default -> System.out.println("Invalid option");
             }
         }
@@ -46,7 +47,30 @@ public class HeadlinesMenu {
         System.out.println("5. Technology");
 
         System.out.print("Enter search category: ");
-        String keyword = scanner.nextLine().toLowerCase();
+        String input = scanner.nextLine().trim();
+
+        String keyword;
+
+        switch (input) {
+            case "1":
+                keyword = "all";
+                break;
+            case "2":
+                keyword = "business";
+                break;
+            case "3":
+                keyword = "entertainment";
+                break;
+            case "4":
+                keyword = "sports";
+                break;
+            case "5":
+                keyword = "technology";
+                break;
+            default:
+                System.out.println("Invalid option. Please select 1-5.");
+                return;
+        }
 
         List<NewsArticle> results = articleService.search(keyword);
 
@@ -93,7 +117,9 @@ public class HeadlinesMenu {
                     case "3" -> filtered = filterByCategory(rangeArticles, "entertainment");
                     case "4" -> filtered = filterByCategory(rangeArticles, "sports");
                     case "5" -> filtered = filterByCategory(rangeArticles, "technology");
-                    case "6" -> { return; }
+                    case "6" -> {
+                        return;
+                    }
                     default -> {
                         System.out.println("Invalid option");
                         continue;
@@ -140,7 +166,9 @@ public class HeadlinesMenu {
             String option = scanner.nextLine().trim();
 
             switch (option) {
-                case "1" -> { return; }
+                case "1" -> {
+                    return;
+                }
                 case "2" -> System.exit(0);
                 case "3" -> {
                     System.out.print("Article Id: ");
