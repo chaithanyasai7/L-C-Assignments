@@ -14,17 +14,16 @@ import java.util.*;
 
 public class NewsAggregationApplication {
 
-    public static final ArticleService articleService = new ArticleService();
+    public static final service.ArticleService articleService = new service.ArticleService();
 
     public static final Database database = new Database();
     private static final Scanner scanner = new Scanner(System.in);
-    private static final AuthenticationService authenticationService = new AuthenticationService(database);
-    public static final NotificationService notificationService = new NotificationService();
-    private static final List<NewsServer> newsServers = new ArrayList<>();
+    private static final service.AuthenticationService authenticationService = new service.AuthenticationService(database);
+    public static final service.NotificationService notificationService = new service.NotificationService();
+    private static final List<model.NewsServer> newsServers = new ArrayList<>();
     private static final List<String> categories = new ArrayList<>();
 
     public static void main(String[] args) {
-        loadData();
         while (true) {
             System.out.println("Welcome to the News Aggregator application. Please choose the options below.");
             System.out.println("1. Login");
@@ -48,12 +47,12 @@ public class NewsAggregationApplication {
         String email = scanner.nextLine().trim();
         System.out.print("Enter password: ");
         String password = scanner.nextLine().trim();
-        User user = authenticationService.login(email, password);
+        model.User user = authenticationService.login(email, password);
         if (user == null) {
             System.out.println("Invalid credentials.");
             return;
         }
-        if (user.getRole() == UserRole.ADMIN) {
+        if (user.getRole() == model.UserRole.ADMIN) {
             showAdminMenu(user);
         } else {
             showUserMenu(user);
@@ -61,23 +60,62 @@ public class NewsAggregationApplication {
     }
 
     private static void signupFlow() {
-        System.out.print("Enter username: ");
-        String username = scanner.nextLine().trim();
-        System.out.print("Enter email: ");
-        String email = scanner.nextLine().trim();
-        System.out.print("Enter password: ");
-        String password = scanner.nextLine().trim();
-        UserRole role = UserRole.USER;
-        User user = authenticationService.signup(username, email, password, role);
-        if (user != null) {
-            database.saveUser(user);
-            System.out.println("Signup successful.");
-        } else {
-            System.out.println("Signup failed. Try again.");
+        String username, email, password;
+
+        do {
+            System.out.print("Enter username: ");
+            username = scanner.nextLine().trim();
+            if (username.isEmpty()) {
+                System.out.println("Username cannot be empty. Please try again.");
+            } else if (username.length() < 3) {
+                System.out.println("Username must be at least 3 characters long. Please try again.");
+            }
+        } while (username.isEmpty() || username.length() < 3);
+
+        do {
+            System.out.print("Enter email: ");
+            email = scanner.nextLine().trim();
+            if (email.isEmpty()) {
+                System.out.println("Email cannot be empty. Please try again.");
+            } else if (!isValidEmail(email)) {
+                System.out.println("Invalid email format. Please try again.");
+            }
+        } while (email.isEmpty() || !isValidEmail(email));
+
+        do {
+            System.out.print("Enter password: ");
+            password = scanner.nextLine().trim();
+            if (password.isEmpty()) {
+                System.out.println("Password cannot be empty. Please try again.");
+            } else if (password.length() < 4) {
+                System.out.println("Password must be at least 4 characters long. Please try again.");
+            }
+        } while (password.isEmpty() || password.length() < 4);
+
+        model.UserRole role = model.UserRole.USER;
+
+        try {
+            model.User user = authenticationService.signup(username, email, password, role);
+            if (user != null) {
+                database.saveUser(user);
+                System.out.println("Signup successful.");
+            } else {
+                System.out.println("Signup failed. Username or email may already exist.");
+            }
+        } catch (Exception e) {
+            System.out.println("An error occurred during signup. Please try again.");
+            e.printStackTrace();
         }
     }
 
-    private static void showAdminMenu(User admin) {
+    private static boolean isValidEmail(String email) {
+        return email.contains("@") && email.contains(".") &&
+                email.indexOf("@") > 0 &&
+                email.indexOf(".") > email.indexOf("@") + 1 &&
+                email.indexOf(".") < email.length() - 1;
+    }
+
+    private static void showAdminMenu(model.User admin) {
         Scanner scanner = new Scanner(System.in);
 
         while (true) {
@@ -104,8 +142,8 @@ public class NewsAggregationApplication {
                         SimpleDateFormat displayFormat = new SimpleDateFormat("dd MMM yyyy");
 
                         int count = 1;
-                        for (NewsServer server : NewsAggregationApplication.newsServers) {
-                            String status = server.getStatus() == ServerStatus.ACTIVE ? "Active" : "Not Active";
+                        for (model.NewsServer server : NewsAggregationApplication.newsServers) {
+                            String status = server.getStatus() == model.ServerStatus.ACTIVE ? "Active" : "Not Active";
                             String formattedDate = displayFormat.format(server.getLastAccessed());
                             System.out.printf("%d. %s - %s - last accessed: %s\n",
                                     count++, server.getName(), status, formattedDate);
@@ -117,7 +155,7 @@ public class NewsAggregationApplication {
                     System.out.print("Enter Server ID to view details: ");
                     try {
                         int id = Integer.parseInt(scanner.nextLine().trim());
-                        NewsServer server = getServerById(id);
+                        model.NewsServer server = getServerById(id);
                         if (server != null) {
                             System.out.println("List of external server details:");
                             System.out.println("Server ID: " + server.getId());
@@ -145,8 +183,8 @@ public class NewsAggregationApplication {
                         break;
                     }
 
-                    NewsServer serverToUpdate = null;
-                    for (NewsServer s : NewsAggregationApplication.newsServers) {
+                    model.NewsServer serverToUpdate = null;
+                    for (model.NewsServer s : NewsAggregationApplication.newsServers) {
                         if (s.getId() == serverId) {
                             serverToUpdate = s;
                             break;
@@ -197,7 +235,7 @@ public class NewsAggregationApplication {
         }
     }
 
-    private static void showUserMenu(User user) {
+    private static void showUserMenu(model.User user) {
         while (true) {
             String currentDate = java.time.LocalDate.now()
                     .format(java.time.format.DateTimeFormatter.ofPattern("dd-MMM-yyyy"));
@@ -234,16 +272,16 @@ public class NewsAggregationApplication {
             String newsApiKey = ConfigLoader.get("newsapi.key");
             String theNewsApiKey = ConfigLoader.get("thenewsapi.key");
 
-            NewsServer newsApi = new NewsServer(1, "News API", newsApiKey, ServerStatus.ACTIVE);
-            NewsServer theNewsApi = new NewsServer(2, "The News API", theNewsApiKey, ServerStatus.ACTIVE);
+            model.NewsServer newsApi = new model.NewsServer(1, "News API", newsApiKey, model.ServerStatus.ACTIVE);
+            model.NewsServer theNewsApi = new model.NewsServer(2, "The News API", theNewsApiKey, model.ServerStatus.ACTIVE);
 
             NewsAggregationApplication.newsServers.add(newsApi);
             NewsAggregationApplication.newsServers.add(theNewsApi);
         }
     }
 
-    private static NewsServer getServerById(int id) {
-        for (NewsServer s : NewsAggregationApplication.newsServers) {
+    private static model.NewsServer getServerById(int id) {
+        for (model.NewsServer s : NewsAggregationApplication.newsServers) {
             if (s.getId() == id) return s;
         }
         return null;
